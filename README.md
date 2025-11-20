@@ -1,3 +1,5 @@
 NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_9h12rfvdnZWW0K
+
 NEXT_PUBLIC_API_BASE=http://localhost:3000/api
+
 NEXT_PUBLIC_DOCTOR_API_BASE=http://localhost:3000
