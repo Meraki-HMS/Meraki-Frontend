@@ -13,12 +13,14 @@ export default function DoctorSidebar({ open, setOpen }) {
   //console.log("DoctorModuleContext Data:", { user, appointments, prescriptionContext });
 
   const menuItems = [
-    { id: "dashboard", icon: "bi bi-speedometer2", label: "Dashboard", route: "/doctor/dashboard" },
-    { id: "patients", icon: "bi bi-people-fill", label: "My Patients", route: "/doctor/patients" },
-    { id: "appointments", icon: "bi bi-calendar-check", label: "Appointments", route: "/doctor/appointments" },
-    // { id: "complete-appointments", icon: "bi bi-check2-circle", label: "Complete Appointments", route: "/doctor/complete-appointments" },
-    // { id: "prescriptions", icon: "bi bi-file-medical", label: "Prescriptions", route: "/doctor/prescriptions" },
-  ];
+  { id: "dashboard", icon: "bi bi-speedometer2", label: "Dashboard", route: "/doctor/dashboard" },
+
+  { id: "patients", icon: "bi bi-people-fill", label: "My Patients", route: "/doctor/patients" },
+
+  { id: "admitted-patients", icon: "bi bi-hospital-fill", label: "Admitted Patients", route: "/doctor/admitted-patients" },
+
+  { id: "appointments", icon: "bi bi-calendar-check", label: "Appointments", route: "/doctor/appointments" },
+];
 
   return (
     <div
