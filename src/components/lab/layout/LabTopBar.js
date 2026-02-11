@@ -5,64 +5,55 @@ import axios from "axios";
 import { usePathname } from "next/navigation";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_DOCTOR_API_BASE || "http://localhost:3000";
+  process.env.NEXT_PUBLIC_LAB_API_BASE || "http://localhost:3000";
 
-export default function DoctorTopBar({ sidebarOpen, setSidebarOpen, user }) {
+export default function LabTopBar({ sidebarOpen, setSidebarOpen, user }) {
   const pathname = usePathname();
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-
-  // ✅ Profile Image State
   const [profileImage, setProfileImage] = useState(null);
 
-  // ✅ Fetch ONLY profile image
-  const fetchDoctorProfileImage = async () => {
+  // ✅ Fetch Lab Profile Image
+  const fetchLabProfileImage = async () => {
     try {
       const hmsUser = JSON.parse(localStorage.getItem("hmsUser"));
       const token = hmsUser?.token;
 
       if (!token) return;
 
-      const res = await axios.get(`${API_BASE_URL}/doctors/profile`, {
+      const res = await axios.get(`${API_BASE_URL}/labs/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setProfileImage(res.data?.doctor?.profileImage || null);
+      setProfileImage(res.data?.lab?.profileImage || null);
     } catch (err) {
-      console.error("❌ Error fetching profile image:", err);
+      console.error("❌ Error fetching lab profile image:", err);
     }
   };
 
   useEffect(() => {
-    fetchDoctorProfileImage();
+    fetchLabProfileImage();
   }, []);
 
   const displayName = (() => {
     if (user?.name && user.name.trim()) return user.name;
     if (user?.email) return user.email.split("@")[0];
-    return "Doctor";
+    return "Lab User";
   })();
 
   const notifications = [
     {
       id: 1,
-      type: "emergency",
-      message: "Emergency case in Room 204",
-      time: "2 min ago",
-      read: false,
-    },
-    {
-      id: 2,
-      type: "appointment",
-      message: "New appointment request",
+      type: "report",
+      message: "New test assigned",
       time: "5 min ago",
       read: false,
     },
     {
-      id: 3,
-      type: "lab",
-      message: "Lab results ready for Patient #123",
+      id: 2,
+      type: "update",
+      message: "Report uploaded successfully",
       time: "1 hour ago",
       read: true,
     },
@@ -74,19 +65,20 @@ export default function DoctorTopBar({ sidebarOpen, setSidebarOpen, user }) {
     <header className="bg-white/80 backdrop-blur-lg border-b border-gray-200/60 sticky top-0 z-30 shadow-sm">
       <div className="px-4 lg:px-6 py-4">
         <div className="flex items-center justify-between">
+
           {/* LEFT */}
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2.5 rounded-xl bg-white shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 text-gray-600 hover:text-blue-600"
+              className="p-2.5 rounded-xl bg-white shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 text-gray-600 hover:text-purple-600"
             >
               <i className="bi bi-list text-xl"></i>
             </button>
 
             <div className="hidden md:block">
               <h1 className="text-2xl font-bold text-gray-800 capitalize">
-                {pathname.replace("/doctor/", "").replace("-", " ") ||
-                  "Doctor Dashboard"}
+                {pathname.replace("/lab/", "").replace("-", " ") ||
+                  "Lab Dashboard"}
               </h1>
               <p className="text-sm text-gray-500">
                 {new Date().toLocaleDateString("en-US", {
@@ -99,26 +91,18 @@ export default function DoctorTopBar({ sidebarOpen, setSidebarOpen, user }) {
             </div>
           </div>
 
-          {/* SEARCH */}
-          {/* <div className="flex-1 max-w-2xl mx-4 lg:mx-8 hidden md:block">
-            <input
-              type="text"
-              placeholder="Search patients, medications..."
-              className="w-full px-6 py-3 rounded-2xl border border-gray-300 bg-white/80 shadow-sm focus:ring-2 focus:ring-blue-500"
-            />
-          </div> */}
-
           {/* RIGHT */}
           <div className="flex items-center gap-3">
+
             {/* Notifications */}
             <div className="relative">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-2.5 rounded-xl bg-white border border-gray-200 text-gray-600 hover:text-blue-600"
+                className="relative p-2.5 rounded-xl bg-white border border-gray-200 text-gray-600 hover:text-purple-600"
               >
                 <i className="bi bi-bell text-xl"></i>
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                  <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs px-1.5 py-0.5 rounded-full">
                     {unreadCount}
                   </span>
                 )}
@@ -131,14 +115,13 @@ export default function DoctorTopBar({ sidebarOpen, setSidebarOpen, user }) {
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-2xl shadow-sm border border-gray-200"
               >
-                {/* ✅ PROFILE IMAGE */}
                 <div className="w-8 h-8 rounded-full overflow-hidden border shadow">
                   <img
-                    src={profileImage || "/default-doctor.png"}
-                    alt="Doctor"
+                    src={profileImage || "/default-lab.png"}
+                    alt="Lab"
                     className="w-full h-full object-cover"
                     onError={(e) =>
-                      (e.currentTarget.src = "/default-doctor.png")
+                      (e.currentTarget.src = "/default-lab.png")
                     }
                   />
                 </div>
@@ -148,9 +131,10 @@ export default function DoctorTopBar({ sidebarOpen, setSidebarOpen, user }) {
                     {displayName}
                   </span>
                   <span className="block text-xs text-gray-500">
-                    {user?.specialization || "Specialist"}
+                    Laboratory
                   </span>
                 </div>
+
                 <i className="bi bi-chevron-down text-gray-400 hidden lg:block"></i>
               </button>
 
@@ -160,9 +144,9 @@ export default function DoctorTopBar({ sidebarOpen, setSidebarOpen, user }) {
                   <div className="p-4 border-b">
                     <div className="flex items-center gap-3">
                       <img
-                        src={profileImage || "/default-doctor.png"}
+                        src={profileImage || "/default-lab.png"}
                         className="w-10 h-10 rounded-full object-cover border"
-                        alt="Doctor"
+                        alt="Lab"
                       />
                       <div>
                         <p className="font-semibold text-gray-800">
@@ -177,7 +161,7 @@ export default function DoctorTopBar({ sidebarOpen, setSidebarOpen, user }) {
 
                   <div className="p-2">
                     <button
-                      onClick={() => (window.location.href = "/doctor/profile")}
+                      onClick={() => (window.location.href = "/lab/profile")}
                       className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded-lg flex gap-2"
                     >
                       <i className="bi bi-person"></i> My Profile
@@ -188,7 +172,7 @@ export default function DoctorTopBar({ sidebarOpen, setSidebarOpen, user }) {
                     <button
                       onClick={() => {
                         localStorage.clear();
-                        window.location.href = "/login";
+                        window.location.href = "/lab/login";
                       }}
                       className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg flex gap-2"
                     >

@@ -9,12 +9,15 @@ export default function LoginSelection() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (role === "admin") {
       router.push("/admin/login");
     } else if (role === "receptionist") {
       router.push("/receptionist/login");
+    } else if (role === "lab") {
+      router.push("/login/labLogin"); // ✅ Correct route
     } else {
-      router.push("/login/doctorLogin"); // your doctor login path
+      router.push("/login/doctorLogin");
     }
   };
 
@@ -29,13 +32,12 @@ export default function LoginSelection() {
         <h1 className="text-4xl font-bold mb-4 text-gray-900">
           Welcome to <span className="text-blue-600">Meraki HMS</span>
         </h1>
-        <p className="text-gray-600 mb-8 text-lg">
-          Choose your role to continue
-        </p>
+        <p className="text-gray-600 mb-8 text-lg">Choose your role to continue</p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex justify-center gap-6 flex-wrap">
-            {/* Doctor Card */}
+            
+            {/* Doctor */}
             <button
               type="button"
               onClick={() => setRole("doctor")}
@@ -45,23 +47,15 @@ export default function LoginSelection() {
                   : "border-gray-200 hover:border-gray-400 bg-white"
               }`}
             >
-              <svg
-                className="w-12 h-12 mb-2 text-blue-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
+              <svg className="w-12 h-12 mb-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M12 11c0-1.104.896-2 2-2h0a2 2 0 012 2v2a2 2 0 01-2 2h0a2 2 0 01-2-2v-2zm-6 9v-2a4 4 0 014-4h4a4 4 0 014 4v2"
                 />
               </svg>
               <span className="font-semibold text-gray-800">Doctor</span>
             </button>
 
-            {/* Admin Card */}
+            {/* Admin */}
             <button
               type="button"
               onClick={() => setRole("admin")}
@@ -71,23 +65,15 @@ export default function LoginSelection() {
                   : "border-gray-200 hover:border-gray-400 bg-white"
               }`}
             >
-              <svg
-                className="w-12 h-12 mb-2 text-cyan-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
+              <svg className="w-12 h-12 mb-2 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M10 4v2m4-2v2m-9 4h14m-2 4h2m-2 4h2M4 14h2m-2 4h2m2-4h8m-8 4h8"
                 />
               </svg>
               <span className="font-semibold text-gray-800">Admin</span>
             </button>
 
-            {/* Receptionist Card */}
+            {/* Receptionist */}
             <button
               type="button"
               onClick={() => setRole("receptionist")}
@@ -97,35 +83,38 @@ export default function LoginSelection() {
                   : "border-gray-200 hover:border-gray-400 bg-white"
               }`}
             >
-              <svg
-                className="w-12 h-12 mb-2 text-pink-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
+              <svg className="w-12 h-12 mb-2 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M12 14l9-5-9-5-9 5 9 5zm0 0v6m0-6l-9-5m9 5l9-5"
                 />
               </svg>
               <span className="font-semibold text-gray-800">Receptionist</span>
             </button>
+
+            {/* ✅ Lab */}
+            <button
+              type="button"
+              onClick={() => setRole("lab")}
+              className={`flex flex-col items-center justify-center w-40 h-40 rounded-2xl border-2 transition-all duration-300 ${
+                role === "lab"
+                  ? "border-purple-600 bg-purple-50 shadow-lg"
+                  : "border-gray-200 hover:border-gray-400 bg-white"
+              }`}
+            >
+              <svg className="w-12 h-12 mb-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M6 2v6l6 3 6-3V2M6 22v-6l6-3 6 3v6"
+                />
+              </svg>
+              <span className="font-semibold text-gray-800">Lab</span>
+            </button>
           </div>
 
           <button
             type="submit"
-            className="mt-8 w-full py-3.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 
-                     transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="mt-8 w-full py-3.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl"
           >
-            Continue to{" "}
-            {role === "doctor"
-              ? "Doctor"
-              : role === "admin"
-              ? "Admin"
-              : "Receptionist"}{" "}
-            Login
+            Continue to {role.charAt(0).toUpperCase() + role.slice(1)} Login
           </button>
         </form>
       </div>

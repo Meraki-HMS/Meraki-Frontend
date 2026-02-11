@@ -12,15 +12,39 @@ export default function DoctorSidebar({ open, setOpen }) {
 
   //console.log("DoctorModuleContext Data:", { user, appointments, prescriptionContext });
 
-  const menuItems = [
-  { id: "dashboard", icon: "bi bi-speedometer2", label: "Dashboard", route: "/doctor/dashboard" },
-
-  { id: "patients", icon: "bi bi-people-fill", label: "My Patients", route: "/doctor/patients" },
-
-  { id: "admitted-patients", icon: "bi bi-hospital-fill", label: "Admitted Patients", route: "/doctor/admitted-patients" },
-
-  { id: "appointments", icon: "bi bi-calendar-check", label: "Appointments", route: "/doctor/appointments" },
+const menuItems = [
+  {
+    id: "dashboard",
+    icon: "bi bi-speedometer2",
+    label: "Dashboard",
+    route: "/doctor/dashboard",
+  },
+  {
+    id: "patients",
+    icon: "bi bi-people-fill",
+    label: "My Patients",
+    route: "/doctor/patients",
+  },
+  {
+    id: "admitted-patients",
+    icon: "bi bi-hospital-fill",
+    label: "Admitted Patients",
+    route: "/doctor/admitted-patients",
+  },
+  {
+    id: "appointments",
+    icon: "bi bi-calendar-check",
+    label: "Appointments",
+    route: "/doctor/appointments",
+  },
+  {
+    id: "lab-reports",
+    icon: "bi bi-file-earmark-medical",
+    label: "Lab Reports",
+    route: "/doctor/lab-reports",
+  },
 ];
+
 
   return (
     <div
