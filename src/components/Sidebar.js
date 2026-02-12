@@ -9,7 +9,7 @@ export default function Sidebar({ open, setOpen }) {
     { href: "/receptionist/dashboard", icon: "bi bi-speedometer2", label: "Dashboard" },
     { href: "/receptionist/patients", icon: "bi bi-people-fill", label: "Patients" },
     { href: "/receptionist/appointments", icon: "bi bi-calendar-check", label: "Appointments" },
-    { href: "/receptionist/beds", icon: "bi bi-hospital", label: "Bed Management" },
+    //{ href: "/receptionist/beds", icon: "bi bi-hospital", label: "Bed Management" },
     { href: "/receptionist/staff", icon: "bi bi-person-badge-fill", label: "Staff" },
     { href: "/receptionist/complete-appointment", icon: "bi bi-cash-stack", label: "Payments" },
   ];
