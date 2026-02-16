@@ -5,7 +5,7 @@ NEXT_PUBLIC_LAB_API_BASE=http://localhost:3000
 NEXT_PUBLIC_ADMIN_API_BASE=http://localhost:3000
 
 
-Backend----
+
 MONGO_URI=mongodb+srv://HMS:gWZt6WxnEsghGGwB@cluster0.zgkxiif.mongodb.net/hms-system-application?retryWrites=true&w=majority&appName=Cluster0
 JWT_SECRET="Meraki-HMS-Secret"
 PORT=3000
