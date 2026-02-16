@@ -8,16 +8,34 @@ export default function Sidebar({ open, setOpen }) {
   const pathname = usePathname();
 
   // ⚠️ MODIFIED: Keeping only the 'Staff' link (and renaming it for clarity)
-  const menuItems = [
-    // Removed: Dashboard
-    // Removed: Patients
-    // Removed: Appointments
-    // Removed: Bed Management
-    
-    { href: "/admin/staff", icon: "bi bi-person-badge-fill", label: "Staff Management" },
-     { href: "/admin/dashboard", icon: "bi bi-speedometer2", label: "Dashboard" },
-    // Removed: Reports
-  ];
+const menuItems = [
+  { 
+    href: "/admin/dashboard", 
+    icon: "bi bi-speedometer2", 
+    label: "Dashboard" 
+  },
+
+  { 
+    href: "/admin/staff", 
+    icon: "bi bi-person-badge-fill", 
+    label: "Staff Management" 
+  },
+
+  { 
+    href: "/admin/beds", 
+    icon: "bi bi-hospital-fill", 
+    label: "Bed Management" 
+  },
+
+  // ✅ NEW IPD ADMISSION MENU
+  { 
+    href: "/admin/ipd-admission", 
+    icon: "bi bi-clipboard2-pulse-fill", 
+    label: "IPD Admission" 
+  },
+];
+
+
   
   // 💡 Note: If you want to keep the main dashboard link but remove the others:
   /*

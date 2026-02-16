@@ -80,6 +80,7 @@ if (token && admin) {
       id: admin.id,
       email: admin.email,
       hospitalId: admin.hospital_id,
+      role: admin.role,
       token,
     })
   );

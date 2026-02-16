@@ -59,7 +59,7 @@ export default function AddReceptionistModal({ onClose, onSuccess }) {
     };
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/receptionists/register`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_BASE}/receptionists/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

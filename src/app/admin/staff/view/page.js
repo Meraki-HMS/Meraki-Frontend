@@ -31,7 +31,7 @@ const fetchStaffData = async (token) => {
       return;
     }
 
-    const baseURL = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:3000";
+    const baseURL = process.env.NEXT_PUBLIC_ADMIN_API_BASE || "http://localhost:3000";
 
     // Fetch both doctors and receptionists by hospital ID
     const [doctorsRes, receptionistsRes] = await Promise.all([

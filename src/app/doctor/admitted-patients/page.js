@@ -55,13 +55,14 @@ export default function AdmittedPatientsPage() {
     if (!doctorId || !hospitalId) return;
 
     axios
-      .get(`${API_BASE_URL}/api/admissions/doctor-patients`, {
+      .get(`${API_BASE_URL}/api/admissions/allAdmitted-patients`, {
         params: { hospitalId, doctorId },
       })
       .then((res) => {
-        setPatients(res.data);
-        setFiltered(res.data);
+        setPatients(res.data.patients || []);
+        setFiltered(res.data.patients || []);
       })
+
       .finally(() => setLoading(false));
   }, [doctorId, hospitalId]);
 
@@ -76,20 +77,39 @@ export default function AdmittedPatientsPage() {
 
   /* ---------------- LOAD PLAN ---------------- */
   useEffect(() => {
-    if (!selected) return;
+  if (!selected?._id) return;
 
-    axios
-      .get(`${API_BASE_URL}/treatment-plans/patient/${selected.patientId}`)
-      .then((res) => {
-        if (res.data?.data?._id) {
-          setPlan(res.data.data);
-          setHasPlan(true);
-        } else {
-          setHasPlan(false);
-        }
-      })
-      .catch(() => setHasPlan(false));
-  }, [selected]);
+  axios
+    .get(
+      `${API_BASE_URL}/treatment-plans/admission/${selected._id}`
+    )
+    .then((res) => {
+      if (res.data?.success && res.data?.data) {
+        setPlan(res.data.data);
+        setHasPlan(true);
+      } else {
+        setHasPlan(false);
+        resetPlan();
+      }
+    })
+    .catch(() => {
+      setHasPlan(false);
+      resetPlan();
+    });
+}, [selected]);
+
+const resetPlan = () => {
+  setPlan({
+    diagnosis: "",
+    medicines: [
+      { name: "", dosage: "", frequency: "", duration: "", instructions: "" },
+    ],
+    meals: [{ meal_time: "Morning", items: [], instructions: "" }],
+    procedures: [""],
+    notes: "",
+  });
+};
+
 
   /* ---------------- SAVE PLAN ---------------- */
   const saveTreatmentPlan = async () => {
