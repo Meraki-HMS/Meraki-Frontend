@@ -116,14 +116,14 @@ export default function LabTopBar({ sidebarOpen, setSidebarOpen, user }) {
                 className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-2xl shadow-sm border border-gray-200"
               >
                 <div className="w-8 h-8 rounded-full overflow-hidden border shadow">
-                  <img
+                  {/* <img
                     src={profileImage || "/default-lab.png"}
                     alt="Lab"
                     className="w-full h-full object-cover"
                     onError={(e) =>
                       (e.currentTarget.src = "/default-lab.png")
                     }
-                  />
+                  /> */}
                 </div>
 
                 <div className="hidden lg:block text-left">
@@ -143,11 +143,11 @@ export default function LabTopBar({ sidebarOpen, setSidebarOpen, user }) {
                 <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 z-50">
                   <div className="p-4 border-b">
                     <div className="flex items-center gap-3">
-                      <img
+                      {/* <img
                         src={profileImage || "/default-lab.png"}
                         className="w-10 h-10 rounded-full object-cover border"
                         alt="Lab"
-                      />
+                      /> */}
                       <div>
                         <p className="font-semibold text-gray-800">
                           {displayName}
@@ -172,7 +172,7 @@ export default function LabTopBar({ sidebarOpen, setSidebarOpen, user }) {
                     <button
                       onClick={() => {
                         localStorage.clear();
-                        window.location.href = "/lab/login";
+                        window.location.href = "/login";
                       }}
                       className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg flex gap-2"
                     >

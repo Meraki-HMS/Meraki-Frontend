@@ -1,328 +1,899 @@
+// "use client";
+
+// import { useState, useEffect } from "react";
+// import { useLabAuth } from "../../../hooks/useLabAuth";
+// import axios from "axios";
+// import { motion, AnimatePresence } from "framer-motion";
+// import {
+//   PlusCircle,
+//   X,
+//   User,
+//   Mail,
+//   Phone,
+//   Search,
+// } from "lucide-react";
+
+// const API_BASE =
+//   process.env.NEXT_PUBLIC_LAB_API_BASE || "http://localhost:3000";
+
+// export default function LabDashboard() {
+
+//   const { user } = useLabAuth();
+
+//   const [showForm, setShowForm] = useState(false);
+//   const [loading, setLoading] = useState(false);
+//   const [searching, setSearching] = useState(false);
+//   const [patientFound, setPatientFound] = useState(null);
+
+//   const commonTests = [
+//     "Complete Blood Count (CBC)",
+//     "Blood Test",
+//     "MRI",
+//     "CT Scan",
+//     "X-Ray",
+//     "Urine Test",
+//     "Liver Function Test"
+//   ];
+
+//   const [formData, setFormData] = useState({
+
+//     identifier: "",
+
+//     patientName: "",
+//     patientEmail: "",
+//     patientContact: "",
+
+//     selectedTests: [], // ✅ MULTIPLE TESTS
+
+//     remarks: "",
+//     reportFile: null,
+
+//   });
+
+//   /* LOCK BACKGROUND SCROLL */
+//   useEffect(() => {
+//     document.body.style.overflow = showForm ? "hidden" : "auto";
+//   }, [showForm]);
+
+//   /* INPUT CHANGE */
+//   const handleChange = (e) => {
+
+//     const { name, value, files } = e.target;
+
+//     if (name === "reportFile") {
+
+//       setFormData(prev => ({
+//         ...prev,
+//         reportFile: files[0]
+//       }));
+
+//     } else {
+
+//       setFormData(prev => ({
+//         ...prev,
+//         [name]: value
+//       }));
+
+//     }
+
+//   };
+
+//   /* TOGGLE TEST CHECKBOX */
+//   const toggleTest = (test) => {
+
+//     setFormData(prev => {
+
+//       const exists = prev.selectedTests.includes(test);
+
+//       if (exists) {
+//         return {
+//           ...prev,
+//           selectedTests:
+//             prev.selectedTests.filter(t => t !== test)
+//         };
+//       }
+
+//       return {
+//         ...prev,
+//         selectedTests: [...prev.selectedTests, test]
+//       };
+
+//     });
+
+//   };
+
+//   /* SEARCH PATIENT */
+//   const searchPatient = async () => {
+
+//     try {
+
+//       const hmsUser =
+//         JSON.parse(localStorage.getItem("hmsUser"));
+
+//       const token = hmsUser?.token;
+
+//       if (!formData.identifier) {
+//         alert("Enter patient email");
+//         return;
+//       }
+
+//       setSearching(true);
+
+//       const res = await axios.get(
+//         `${API_BASE}/lab-reports/email/${formData.identifier}`,
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`
+//           }
+//         }
+//       );
+
+//       const patient = res.data.patient;
+//       const record = res.data.record;
+
+//       setFormData(prev => ({
+
+//         ...prev,
+
+//         patientEmail: patient.email || "",
+
+//         patientName:
+//           record?.patient_id?.name || "",
+
+//         patientContact:
+//           record?.patient_id?.mobile || "",
+
+//         // ✅ AUTOFILL MULTIPLE TESTS
+//         selectedTests:
+//           record?.recommended_tests || [],
+
+//         remarks:
+//           record?.diagnosis || ""
+
+//       }));
+
+//       setPatientFound(true);
+
+//     }
+//     catch {
+
+//       setPatientFound(false);
+
+//     }
+//     finally {
+
+//       setSearching(false);
+
+//     }
+
+//   };
+
+//   /* SUBMIT */
+//   const handleSubmit = async (e) => {
+
+//     e.preventDefault();
+
+//     try {
+
+//       const hmsUser =
+//         JSON.parse(localStorage.getItem("hmsUser"));
+
+//       const token = hmsUser?.token;
+
+//       const fd = new FormData();
+
+//       fd.append("patientName", formData.patientName);
+
+//       fd.append("patientEmail", formData.patientEmail);
+
+//       fd.append("patientContact", formData.patientContact);
+
+//       // ✅ SEND MULTIPLE TESTS
+//       fd.append(
+//         "testName",
+//         JSON.stringify(formData.selectedTests)
+//       );
+
+//       fd.append("remarks", formData.remarks);
+
+//       fd.append("hospital_id", hmsUser.hospitalId);
+
+//       fd.append("lab_id", hmsUser.labid);
+
+//       fd.append("reportFile", formData.reportFile);
+
+//       setLoading(true);
+
+//       await axios.post(
+//         `${API_BASE}/lab-reports/create`,
+//         fd,
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`
+//           }
+//         }
+//       );
+
+//       alert("Report Uploaded Successfully");
+
+//       setShowForm(false);
+
+//     }
+//     catch {
+
+//       alert("Upload failed");
+
+//     }
+//     finally {
+
+//       setLoading(false);
+
+//     }
+
+//   };
+
+//   return (
+
+//     <div className="p-6">
+
+//       <button
+//         onClick={() => setShowForm(true)}
+//         className="bg-purple-600 text-white px-6 py-3 rounded-xl flex gap-2"
+//       >
+//         <PlusCircle size={18}/>
+//         Add Report
+//       </button>
+
+//       <AnimatePresence>
+
+//         {showForm && (
+
+//           <motion.div
+//             className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 p-4"
+//           >
+
+//             <motion.div
+//               className="bg-white w-full max-w-lg rounded-xl shadow-xl p-6 max-h-[90vh] overflow-y-auto"
+//             >
+
+//               <button
+//                 onClick={() => setShowForm(false)}
+//                 className="absolute right-4 top-4"
+//               >
+//                 <X/>
+//               </button>
+
+//               <h2 className="text-xl font-bold mb-4">
+//                 Add Lab Report
+//               </h2>
+
+//               {/* SEARCH */}
+//               <div className="flex gap-2 mb-3">
+
+//                 <input
+//                   name="identifier"
+//                   value={formData.identifier}
+//                   onChange={handleChange}
+//                   placeholder="Enter patient email"
+//                   className="flex-1 border px-3 py-2 rounded-lg"
+//                 />
+
+//                 <button
+//                   onClick={searchPatient}
+//                   className="bg-blue-600 text-white px-4 rounded-lg flex items-center gap-1"
+//                 >
+//                   <Search size={16}/>
+//                   {searching ? "..." : "Search"}
+//                 </button>
+
+//               </div>
+
+//               {patientFound === true &&
+//                 <p className="text-green-600">
+//                   ✔ Patient Found
+//                 </p>
+//               }
+
+//               {patientFound === false &&
+//                 <p className="text-red-600">
+//                   ✘ New Patient
+//                 </p>
+//               }
+
+//               {/* FORM */}
+//               <form
+//                 onSubmit={handleSubmit}
+//                 className="space-y-3"
+//               >
+
+//                 <Input
+//                   icon={<User size={16}/>}
+//                   name="patientName"
+//                   value={formData.patientName}
+//                   onChange={handleChange}
+//                   placeholder="Patient Name"
+//                 />
+
+//                 <Input
+//                   icon={<Mail size={16}/>}
+//                   name="patientEmail"
+//                   value={formData.patientEmail}
+//                   onChange={handleChange}
+//                   placeholder="Email"
+//                 />
+
+//                 <Input
+//                   icon={<Phone size={16}/>}
+//                   name="patientContact"
+//                   value={formData.patientContact}
+//                   onChange={handleChange}
+//                   placeholder="Contact"
+//                 />
+
+//                 {/* MULTI TEST SELECT */}
+//                 <div>
+
+//                   <label className="font-medium">
+//                     Select Tests
+//                   </label>
+
+//                   <div className="border rounded-lg p-2 max-h-40 overflow-y-auto">
+
+//                     {commonTests.map(test => {
+
+//                       const checked =
+//                         formData.selectedTests.includes(test);
+
+//                       return (
+
+//                         <label
+//                           key={test}
+//                           className="flex gap-2 items-center"
+//                         >
+
+//                           <input
+//                             type="checkbox"
+//                             checked={checked}
+//                             onChange={() => toggleTest(test)}
+//                           />
+
+//                           {test}
+
+//                         </label>
+
+//                       );
+
+//                     })}
+
+//                   </div>
+
+//                 </div>
+
+//                 <input
+//                   type="file"
+//                   name="reportFile"
+//                   onChange={handleChange}
+//                   required
+//                 />
+
+//                 <textarea
+//                   name="remarks"
+//                   value={formData.remarks}
+//                   onChange={handleChange}
+//                   className="w-full border rounded-lg px-3 py-2"
+//                   placeholder="Remarks"
+//                 />
+
+//                 <button
+//                   className="w-full bg-purple-600 text-white py-2 rounded-lg"
+//                   disabled={loading}
+//                 >
+//                   {loading
+//                     ? "Uploading..."
+//                     : "Submit"}
+//                 </button>
+
+//               </form>
+
+//             </motion.div>
+
+//           </motion.div>
+
+//         )}
+
+//       </AnimatePresence>
+
+//     </div>
+
+//   );
+
+// }
+
+// function Input({ icon, ...props }) {
+
+//   return (
+//     <div className="relative">
+
+//       <div className="absolute left-2 top-2 text-gray-400">
+//         {icon}
+//       </div>
+
+//       <input
+//         {...props}
+//         className="w-full border rounded-lg pl-8 pr-2 py-2"
+//       />
+
+//     </div>
+//   );
+
+// }
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLabAuth } from "../../../hooks/useLabAuth";
+import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
+
 import {
   PlusCircle,
-  FileUp,
   X,
   User,
   Mail,
   Phone,
-  FlaskConical,
+  Search,
+  UploadCloud,
+  FileText,
 } from "lucide-react";
-import axios from "axios";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_LAB_API_BASE || "http://localhost:3000";
 
 export default function LabDashboard() {
+
   const { user } = useLabAuth();
+
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const [patientFound, setPatientFound] = useState(null);
 
   const commonTests = [
     "Complete Blood Count (CBC)",
-    "Blood Sugar Test",
-    "Liver Function Test (LFT)",
-    "Kidney Function Test (KFT)",
-    "Lipid Profile",
-    "Thyroid Profile",
-    "Urine Routine Test",
-    "X-Ray",
-    "MRI Scan",
+    "Blood Test",
+    "MRI",
     "CT Scan",
+    "X-Ray",
+    "Urine Test",
+    "Liver Function Test"
   ];
 
   const [formData, setFormData] = useState({
+
+    identifier: "",
+
     patientName: "",
     patientEmail: "",
     patientContact: "",
-    selectedTest: "",
-    customTest: "",
+
+    selectedTests: [],
+
     remarks: "",
     reportFile: null,
+
   });
 
+  useEffect(() => {
+    document.body.style.overflow = showForm ? "hidden" : "auto";
+  }, [showForm]);
+
   const handleChange = (e) => {
+
     const { name, value, files } = e.target;
 
     if (name === "reportFile") {
-      setFormData({ ...formData, reportFile: files[0] });
+
+      setFormData(prev => ({
+        ...prev,
+        reportFile: files[0]
+      }));
+
     } else {
-      setFormData({ ...formData, [name]: value });
+
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+
     }
+
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
+  const toggleTest = (test) => {
 
-  //   try {
-  //     const token = JSON.parse(localStorage.getItem("hmsUser"))?.token;
-  //     const hmsUser = JSON.parse(localStorage.getItem("hmsUser"));
+    setFormData(prev => {
 
-  //     const finalTestName =
-  //       formData.selectedTest === "Other"
-  //         ? formData.customTest
-  //         : formData.selectedTest;
+      const exists = prev.selectedTests.includes(test);
 
-  //     const fd = new FormData();
+      if (exists) {
+        return {
+          ...prev,
+          selectedTests:
+            prev.selectedTests.filter(t => t !== test)
+        };
+      }
 
-  //     fd.append("patientName", formData.patientName);
-  //     fd.append("patientEmail", formData.patientEmail);
-  //     fd.append("patientContact", formData.patientContact);
-  //     fd.append("testName", finalTestName);
-  //     fd.append("remarks", formData.remarks);
+      return {
+        ...prev,
+        selectedTests: [...prev.selectedTests, test]
+      };
 
-  //     // 🔥 VERY IMPORTANT
-  //     fd.append("hospital_id", hmsUser.hospitalId);
-  //     fd.append("lab_id", hmsUser.labid);
+    });
 
-  //     fd.append("reportFile", formData.reportFile); // must match multer
+  };
 
-  //     await axios.post(`${API_BASE}/lab-reports/create`, fd, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-
-  //     alert("Lab Report Uploaded Successfully!");
-  //     setShowForm(false);
-  //   } catch (error) {
-  //     console.error("Upload Error:", error);
-  //     alert("Upload failed");
-  //   }
-  // };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const searchPatient = async () => {
 
     try {
-      setLoading(true);
 
-      const hmsUser = JSON.parse(localStorage.getItem("hmsUser"));
+      const hmsUser =
+        JSON.parse(localStorage.getItem("hmsUser"));
+
       const token = hmsUser?.token;
 
-      if (!token) {
-        alert("Session expired. Please login again.");
+      if (!formData.identifier) {
+        alert("Enter patient email");
         return;
       }
 
-      const finalTestName =
-        formData.selectedTest === "Other"
-          ? formData.customTest
-          : formData.selectedTest;
+      setSearching(true);
+
+      const res = await axios.get(
+        `${API_BASE}/lab-reports/email/${formData.identifier}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      const patient = res.data.patient;
+      const record = res.data.record;
+
+      setFormData(prev => ({
+
+        ...prev,
+
+        patientEmail: patient.email || "",
+
+        patientName:
+          record?.patient_id?.name || "",
+
+        patientContact:
+          record?.patient_id?.mobile || "",
+
+        selectedTests:
+          record?.recommended_tests || [],
+
+        remarks:
+          record?.diagnosis || ""
+
+      }));
+
+      setPatientFound(true);
+
+    }
+    catch {
+
+      setPatientFound(false);
+
+    }
+    finally {
+
+      setSearching(false);
+
+    }
+
+  };
+
+  const handleSubmit = async (e) => {
+
+    e.preventDefault();
+
+    try {
+
+      const hmsUser =
+        JSON.parse(localStorage.getItem("hmsUser"));
+
+      const token = hmsUser?.token;
 
       const fd = new FormData();
 
       fd.append("patientName", formData.patientName);
       fd.append("patientEmail", formData.patientEmail);
       fd.append("patientContact", formData.patientContact);
-      fd.append("testName", finalTestName);
+
+      fd.append(
+        "testName",
+        JSON.stringify(formData.selectedTests)
+      );
+
       fd.append("remarks", formData.remarks);
 
-      // Important: match backend keys
       fd.append("hospital_id", hmsUser.hospitalId);
       fd.append("lab_id", hmsUser.labid);
 
       fd.append("reportFile", formData.reportFile);
 
-      await axios.post(`${API_BASE}/lab-reports/create`, fd, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      setLoading(true);
 
-      alert("Lab Report Uploaded Successfully!");
+      await axios.post(
+        `${API_BASE}/lab-reports/create`,
+        fd,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
 
-      // ✅ Reset form completely
-      setFormData({
-        patientName: "",
-        patientEmail: "",
-        patientContact: "",
-        selectedTest: "",
-        customTest: "",
-        remarks: "",
-        reportFile: null,
-      });
+      alert("Report Uploaded Successfully");
 
-      // ✅ Close modal
       setShowForm(false);
-    } catch (error) {
-      console.error("Upload Error:", error.response?.data || error);
-      alert(error.response?.data?.message || "Upload failed");
-    } finally {
-      setLoading(false);
+
     }
+    catch {
+
+      alert("Upload failed");
+
+    }
+    finally {
+
+      setLoading(false);
+
+    }
+
   };
 
   return (
-    <div className="p-6 space-y-8">
-      {/* Welcome Card */}
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 rounded-2xl shadow-lg">
-        <h1 className="text-3xl font-bold">
-          Welcome back {user?.email?.split("@")[0] || "Lab User"}
-        </h1>
-        <p className="opacity-90 mt-2">
-          Upload and manage patient lab reports easily.
-        </p>
-      </div>
 
-      {/* Action Card */}
-      <div className="bg-white rounded-2xl shadow-md p-6 flex justify-between items-center border">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100 p-8">
+
+      {/* HEADER */}
+      <div className="flex justify-between items-center mb-8">
+
         <div>
-          <h2 className="text-xl font-semibold text-gray-800">
-            Add New Lab Report
-          </h2>
-          <p className="text-gray-500 text-sm">
-            Upload patient test results securely
+          <h1 className="text-3xl font-bold text-gray-800">
+            Lab Dashboard
+          </h1>
+
+          <p className="text-gray-500">
+            Upload and manage patient reports
           </p>
         </div>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => setShowForm(true)}
-          className="flex items-center gap-2 bg-purple-600 text-white px-5 py-3 rounded-xl hover:bg-purple-700 transition shadow"
+          className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 rounded-xl flex gap-2 items-center shadow-lg hover:shadow-xl transition"
         >
-          <PlusCircle size={18} />
+          <PlusCircle size={18}/>
           Add Report
-        </button>
+        </motion.button>
+
       </div>
 
-      {/* Modal */}
+      {/* MODAL */}
       <AnimatePresence>
+
         {showForm && (
+
           <motion.div
-            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 overflow-y-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 p-4"
           >
+
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl p-8 relative max-h-[90vh] overflow-y-auto"
+              initial={{ scale: 0.9, opacity: 0, y: 40 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative bg-white/80 backdrop-blur-xl border border-white/30 w-full max-w-lg rounded-2xl shadow-2xl p-6 max-h-[90vh] overflow-y-auto"
             >
+
+              {/* CLOSE */}
               <button
                 onClick={() => setShowForm(false)}
-                className="absolute top-5 right-5 text-gray-400 hover:text-red-500"
+                className="absolute right-4 top-4 text-gray-500 hover:text-red-500"
               >
-                <X size={20} />
+                <X/>
               </button>
 
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">
-                Add Lab Report
-              </h2>
+              {/* TITLE */}
+              <div className="flex items-center gap-2 mb-6">
 
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <InputField
-                  icon={<User size={18} />}
+                <FileText className="text-purple-600"/>
+
+                <h2 className="text-xl font-bold text-gray-800">
+                  Upload Lab Report
+                </h2>
+
+              </div>
+
+              {/* SEARCH */}
+              <div className="flex gap-2 mb-3">
+
+                <input
+                  name="identifier"
+                  value={formData.identifier}
+                  onChange={handleChange}
+                  placeholder="Enter patient email"
+                  className="flex-1 border border-gray-200 px-3 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
+                />
+
+                <button
+                  onClick={searchPatient}
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 rounded-lg flex items-center gap-1 shadow hover:shadow-lg"
+                >
+                  <Search size={16}/>
+                  {searching ? "..." : "Search"}
+                </button>
+
+              </div>
+
+              {patientFound === true &&
+                <p className="text-green-600 text-sm mb-2">
+                  ✔ Patient Found
+                </p>
+              }
+
+              {patientFound === false &&
+                <p className="text-red-600 text-sm mb-2">
+                  ✘ New Patient
+                </p>
+              }
+
+              {/* FORM */}
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-4"
+              >
+
+                <Input
+                  icon={<User size={16}/>}
                   name="patientName"
-                  placeholder="Patient Name"
                   value={formData.patientName}
                   onChange={handleChange}
-                  required
+                  placeholder="Patient Name"
                 />
 
-                <InputField
-                  icon={<Mail size={18} />}
+                <Input
+                  icon={<Mail size={16}/>}
                   name="patientEmail"
-                  placeholder="Patient Email"
                   value={formData.patientEmail}
                   onChange={handleChange}
-                  type="email"
+                  placeholder="Email"
                 />
 
-                <InputField
-                  icon={<Phone size={18} />}
+                <Input
+                  icon={<Phone size={16}/>}
                   name="patientContact"
-                  placeholder="Patient Contact"
                   value={formData.patientContact}
                   onChange={handleChange}
+                  placeholder="Contact"
                 />
 
-                <div className="relative">
-                  <FlaskConical
-                    className="absolute left-3 top-3 text-gray-400"
-                    size={18}
-                  />
-                  <select
-                    name="selectedTest"
-                    value={formData.selectedTest}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-500 outline-none"
-                    required
-                  >
-                    <option value="">Select Test</option>
-                    {commonTests.map((test, i) => (
-                      <option key={i} value={test}>
-                        {test}
-                      </option>
-                    ))}
-                    <option value="Other">Other</option>
-                  </select>
+                {/* TEST SELECT */}
+                <div>
+
+                  <label className="font-medium text-gray-700">
+                    Select Tests
+                  </label>
+
+                  <div className="border border-gray-200 rounded-lg p-3 max-h-40 overflow-y-auto bg-gray-50">
+
+                    {commonTests.map(test => {
+
+                      const checked =
+                        formData.selectedTests.includes(test);
+
+                      return (
+
+                        <label
+                          key={test}
+                          className="flex gap-2 items-center py-1 hover:bg-purple-50 rounded px-2 cursor-pointer"
+                        >
+
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => toggleTest(test)}
+                          />
+
+                          {test}
+
+                        </label>
+
+                      );
+
+                    })}
+
+                  </div>
+
                 </div>
 
-                {formData.selectedTest === "Other" && (
-                  <InputField
-                    name="customTest"
-                    placeholder="Enter Custom Test Name"
-                    value={formData.customTest}
-                    onChange={handleChange}
-                    required
-                  />
-                )}
+                {/* FILE */}
+                <label className="flex flex-col items-center justify-center border-2 border-dashed border-purple-300 rounded-xl p-4 cursor-pointer hover:bg-purple-50 transition">
 
-                <div className="border-2 border-dashed rounded-xl p-6 text-center hover:border-purple-500 transition">
-                  <FileUp className="mx-auto text-purple-600 mb-3" size={28} />
-                  <p className="text-gray-600 mb-2">
-                    Upload Lab Report (Any Format)
-                  </p>
+                  <UploadCloud className="text-purple-600 mb-2"/>
+
+                  <span className="text-sm text-gray-600">
+                    Click to upload report
+                  </span>
+
                   <input
                     type="file"
                     name="reportFile"
                     onChange={handleChange}
-                    className="w-full"
                     required
+                    className="hidden"
                   />
-                </div>
+
+                </label>
 
                 <textarea
                   name="remarks"
-                  placeholder="Additional Remarks"
                   value={formData.remarks}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-500 outline-none"
-                  rows={3}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
+                  placeholder="Remarks"
                 />
 
-                <button
-                  type="submit"
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 rounded-xl shadow-lg hover:shadow-xl transition"
                   disabled={loading}
-                  className="w-full bg-purple-600 text-white py-3 rounded-xl font-medium hover:bg-purple-700 transition shadow-md disabled:opacity-50"
                 >
-                  {loading ? "Uploading..." : "Submit Lab Report"}
-                </button>
+                  {loading
+                    ? "Uploading..."
+                    : "Submit Report"}
+                </motion.button>
+
               </form>
+
             </motion.div>
+
           </motion.div>
+
         )}
+
       </AnimatePresence>
+
     </div>
+
   );
+
 }
 
-function InputField({ icon, ...props }) {
+function Input({ icon, ...props }) {
+
   return (
+
     <div className="relative">
-      {icon && (
-        <div className="absolute left-3 top-3 text-gray-400">{icon}</div>
-      )}
+
+      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+        {icon}
+      </div>
+
       <input
         {...props}
-        className="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-500 outline-none"
+        className="w-full border border-gray-200 rounded-lg pl-9 pr-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
       />
+
     </div>
+
   );
+
 }
